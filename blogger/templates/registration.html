@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<section class="reg">
+    <p class="reg_title">Registration user</p>
+    <form class="reg_form" action="" method="post">
+
+        <div class="reg_form_username">
+            <div class="reg_form_label">Username</div>
+            <input type="username" required>
+        </div>
+
+        <div class="reg_form_password">
+            <div class="reg_form_label">Password</div>
+             <input type="password" required>
+        </div>
+
+        <div class="reg_form_password reg_form_password_again">
+            <div class="reg_form_label">Enter password again</div>
+            <input type="password" required>
+        </div>
+
+        <input class="reg_bottom" type="submit" value="Registration">
+    </form>
+</section>
+
+{% endblock %}

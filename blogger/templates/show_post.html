@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<h1>{{ post.title }}</h1>
+<div>
+    {{ post.content }}
+</div>
+<hr>
+<div>
+{% for comment in post.comments %}
+    <div style="background-color: #ccc; margin-top: 0.5em; margin-bottom: 0.5em;">
+        {{ comment.content }}
+    </div>
+{% endfor %}
+</div>
+
+<a href={{ url_for('add_comment', post_id=post.id) }}>Add_comment</a>
+
+
+{% endblock %}
