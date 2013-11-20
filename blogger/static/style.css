@@ -64,12 +64,18 @@ h1 a:link, h1 a:visited, h1 a:hover, h1 a:active { text-decoration: none; }
     color: #fff;
 }
 
+.reg_form > div {
+    margin: 10px 0 10px 0;
+}
+
 .reg_title {
     margin: 0;
     padding: 22px 0 10px 22px;
     border-bottom: 5px solid #fff;
     color: #fff;
-    font-size: 25pt
+    font-size: 25pt;
+    font-family: Arial, sans-serif;
+
 }
 
 .reg_bottom {
