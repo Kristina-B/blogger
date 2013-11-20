@@ -6,10 +6,6 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship
 from sqlalchemy.ext.declarative import declarative_base
 
-from flask.ext.wtf import Form
-from wtforms import TextField, PasswordField
-from wtforms.validators import Required, EqualTo
-
 Session = scoped_session(sessionmaker())
 
 Model = declarative_base()
@@ -24,13 +20,6 @@ class User(Model):
 
     posts = relationship('Post', backref='author')
 
-
-class RegistrationForm(Form):
-    __tablename__ = 'registration_form'
-
-    name = TextField('Username', [Required()])
-    password = PasswordField('Password', [Required()])
-    confirm = PasswordField('Repeat Password', [Required(),EqualTo('password', message='Passwords must match')])
 
 
 class Post(Model):

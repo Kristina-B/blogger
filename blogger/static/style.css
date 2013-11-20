@@ -47,6 +47,8 @@ h1 a:link, h1 a:visited, h1 a:hover, h1 a:active { text-decoration: none; }
     width:85%;
 }
 
+/* Styles for registration form */
+
 .reg {
     width: 400px;
     margin: 60px auto;

@@ -4,7 +4,8 @@ import datetime as dt
 from sqlalchemy import create_engine
 from flask import Flask, request, url_for, abort, redirect, render_template, flash, session
 
-from blogger.models import Session, Post, Comment, User, RegistrationForm
+from blogger.models import Session, Post, Comment, User
+from blogger.forms import RegistrationForm
 
 # Создание объекта Flask
 app = Flask(__name__)
@@ -82,7 +83,7 @@ def registration():
         session['user'] = {'id': user.id, 'username': user.username}
         flash('Thanks for registering')
 
-        return redirect(url_for('home.html'))
+        return redirect(url_for('home'))
     return render_template('registration.html', form=form)
 
 @app.route('/')
