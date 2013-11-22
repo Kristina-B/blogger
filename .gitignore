@@ -1,4 +1,5 @@
 *.pyc
 *.pyo
-.idea
-var
+.idea/
+/var/
+/venv/
