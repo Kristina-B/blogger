@@ -77,7 +77,7 @@ def registration():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
         dbs = Session()
-        user = dbs.query(User).filter(User.username == form.name.data, User.password == form.password.data)
+        user = User(form.username.data, form.password.data)
         dbs.add(user)
         dbs.commit()
         session['user'] = {'id': user.id, 'username': user.username}
