@@ -20,6 +20,9 @@ class User(Model):
 
     posts = relationship('Post', backref='author')
 
+    def __init__(self, username, password):
+        self.username=username
+        self.password=password
 
 
 class Post(Model):
