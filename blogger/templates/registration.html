@@ -17,12 +17,26 @@
         </div>
 
         <div>
-            <label for="password-confirm">Enter password again</label>
-            <input type="password" id="password-confirm" name="password-confirm" required>
+            <label for="password_2">Enter password again</label>
+            <input type="password" id="password_2" name="password_2" required>
         </div>
 
         <input class="reg_bottom" type="submit" value="Registration">
     </form>
 </section>
+
+<form method="post" action=".">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
+</form>
+
+{% if form.errors %}
+    <ul class="errors">
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ form[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+{% endif %}
 
 {% endblock %}

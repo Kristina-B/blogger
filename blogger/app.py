@@ -1,5 +1,6 @@
 # coding: utf-8
 import datetime as dt
+from flask_wtf import csrf
 
 from sqlalchemy import create_engine
 from flask import Flask, request, url_for, abort, redirect, render_template, flash, session
@@ -7,16 +8,20 @@ from flask import Flask, request, url_for, abort, redirect, render_template, fla
 from blogger.models import Session, Post, Comment, User
 from blogger.forms import RegistrationForm
 
+from flask_wtf.csrf import CsrfProtect
+
 # Создание объекта Flask
 app = Flask(__name__)
+CsrfProtect(app)
+
 # Загрузка параметров из файла settings.py
 app.config.from_pyfile('settings.py')
 
 # Создание engine. Engine - менеджер подключений к базе данных
 engine = create_engine(app.config['DBURI'], echo=True)
+
 # Привязка класса Session к существующему engine
 Session.configure(bind=engine)
-
 
 # Удаление сессии при остановке приложения
 @app.teardown_appcontext
@@ -51,6 +56,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.clear()
+    flash('Good bye! See you later.')
     return redirect(url_for('home'))
 
 
@@ -81,8 +87,8 @@ def registration():
         dbs.add(user)
         dbs.commit()
         session['user'] = {'id': user.id, 'username': user.username}
-        flash('Thanks for registering')
 
+        flash('Thanks for registering')
         return redirect(url_for('home'))
     return render_template('registration.html', form=form)
 
@@ -166,6 +172,9 @@ def add_comment(post_id):
 def page_not_found(error):
     return render_template ('error_404.html'), 404
 
+@app.errorhandler(400)
+def csrf_error(reason):
+    return render_template('csrf_error.html', reason=reason), 400
 
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
