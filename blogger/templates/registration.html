@@ -25,9 +25,7 @@
     </form>
 </section>
 
-<form method="post" action=".">
-    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
-</form>
+{{ form.csrf_token }}
 
 {% if form.errors %}
     <ul class="errors">

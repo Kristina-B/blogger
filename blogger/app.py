@@ -1,6 +1,5 @@
 # coding: utf-8
 import datetime as dt
-from flask_wtf import csrf
 
 from sqlalchemy import create_engine
 from flask import Flask, request, url_for, abort, redirect, render_template, flash, session
@@ -89,7 +88,7 @@ def registration():
         session['user'] = {'id': user.id, 'username': user.username}
 
         flash('Thanks for registering')
-        return redirect(url_for('home'))
+        return redirect(url_for('login'))
     return render_template('registration.html', form=form)
 
 @app.route('/')
@@ -172,9 +171,9 @@ def add_comment(post_id):
 def page_not_found(error):
     return render_template ('error_404.html'), 404
 
-@app.errorhandler(400)
-def csrf_error(reason):
-    return render_template('csrf_error.html', reason=reason), 400
+#@app.errorhandler(400)
+#def csrf_error(reason):
+#    return render_template('csrf_error.html', reason=reason), 400
 
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
