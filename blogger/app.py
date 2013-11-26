@@ -33,9 +33,8 @@ def login():
     error = None
     form = LoginForm(request.form)
     if request.method == 'POST':
-        dbs = Session()
-        user = dbs.query(User).filter(User.username == request.form['username']).first()
-        if user.password == request.form['password']:
+        user = User.query.filter_by(username=form.username.data).first()
+        if user.password == form.password.data:
             session['user'] = {'id': user.id, 'username': user.username}
             return redirect(url_for('home'))
 
