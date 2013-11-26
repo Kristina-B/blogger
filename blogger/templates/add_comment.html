@@ -3,6 +3,7 @@
 {% block body %}
 
 <form method="post" action="">
+    {{ form.csrf_token }}
     Content:<br>
     <textarea name="content", cols="100" rows="7"></textarea><br>
     <input type="submit" value="Save" /> 

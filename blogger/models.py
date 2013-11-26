@@ -39,6 +39,9 @@ class Post(Model):
 
     comments = relationship('Comment')
 
+    def __init__(self, title, content):
+        self.title = title
+        self.content = content
 
 class Comment(Model):
     __tablename__ = 'comment'
@@ -48,3 +51,6 @@ class Comment(Model):
     content = Column(Text)
 
     created_at = Column(DateTime)
+
+    def __init__(self, content):
+        self.content = content

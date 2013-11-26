@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from flask import Flask, request, url_for, abort, redirect, render_template, flash, session
 
 from blogger.models import Session, Post, Comment, User
-from blogger.forms import RegistrationForm
+from blogger.forms import RegistrationForm, LoginForm, PostForm, CommentForm
 
 from flask_wtf.csrf import CsrfProtect
 
@@ -31,7 +31,7 @@ def teardown_db(exception):
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     error = None
-
+    form = LoginForm(request.form)
     if request.method == 'POST':
         dbs = Session()
         user = dbs.query(User).filter(User.username == request.form['username']).first()
@@ -49,7 +49,7 @@ def login():
         #     session['logged_in'] = True
         #     flash ('You were logged in successfully')
         #     return redirect(url_for('home'))
-    return render_template('login.html', error=error)
+    return render_template('login.html', form=form, error=error)
 
 
 @app.route('/logout')
@@ -100,11 +100,12 @@ def home():
 
 @app.route('/post/new', methods=['GET', 'POST'])
 def add_post():
+    form = PostForm(request.form)
     if not session.get('user'):
         abort(401)
 
     if request.method == 'GET':
-        return render_template('new_post.html')
+        return render_template('new_post.html', form=form)
 
     dbs = Session()
     post = Post(title=request.form['title'],
@@ -118,13 +119,14 @@ def add_post():
 
 @app.route('/post/<post_id>/edit', methods=['GET', 'POST'])
 def edit_post(post_id):
+    form = PostForm(request.form)
     if not session.get('user'):
         abort(401)
     dbs = Session()
     post = dbs.query(Post).get(post_id)
 
     if request.method == 'GET':
-        return render_template('edit_post.html', post=post)
+        return render_template('edit_post.html', post=post, form=form)
 
     post.title = request.form['title']
     post.content = request.form['content']
@@ -153,11 +155,12 @@ def show_post(post_id):
 
 @app.route('/post/<post_id>/add_comment/', methods=['GET', 'POST'])
 def add_comment(post_id):
+    form = CommentForm(request.form)
     dbs = Session()
     post = dbs.query(Post).get(post_id)
 
     if request.method == 'GET':
-        return render_template('add_comment.html', post=post)
+        return render_template('add_comment.html', post=post, form=form)
     
     comment = Comment(
         content=request.form['content'],
@@ -171,9 +174,9 @@ def add_comment(post_id):
 def page_not_found(error):
     return render_template ('error_404.html'), 404
 
-#@app.errorhandler(400)
-#def csrf_error(reason):
-#    return render_template('csrf_error.html', reason=reason), 400
+@app.errorhandler(400)
+def csrf_error(reason):
+    return render_template('csrf_error.html', reason=reason), 400
 
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
