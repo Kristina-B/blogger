@@ -8,7 +8,9 @@ class RegistrationForm(Form):
     __tablename__ = 'registrationForm'
 
     username = TextField('username', [Required()])
-    password = PasswordField('password', [Required(), EqualTo('password_2', message='Passwords must match')])
+    password = PasswordField('password', [
+        Required(),
+        EqualTo('password_2', message='Passwords must match')])
     password_2 = PasswordField('repeat Password')
 
 
