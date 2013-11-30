@@ -10,6 +10,8 @@ Session = scoped_session(sessionmaker())
 
 Model = declarative_base()
 
+#Model.query = Session.query_property()
+
 
 class User(Model):
     __tablename__ = 'user'
