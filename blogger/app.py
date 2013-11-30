@@ -31,10 +31,11 @@ def teardown_db(exception):
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     error = None
+    dbs = Session()
     form = LoginForm(request.form)
     if request.method == 'POST':
-        user = User.query.filter_by(username=form.username.data).first()
-        if user.password == form.password.data:
+        user = dbs.query(User).filter_by(username=form.username.data).first()
+        if user and user.password == form.password.data:
             session['user'] = {'id': user.id, 'username': user.username}
             return redirect(url_for('home'))
 
