@@ -41,14 +41,6 @@ def login():
 
         error = 'Invalid username or password'
 
-        # if request.form['username'] != app.config['LOGIN']:
-        #     error = 'Invalid username'
-        # elif request.form['password'] != app.config['PASSWORD']:
-        #     error = 'Invalid password'
-        # else:
-        #     session['logged_in'] = True
-        #     flash ('You were logged in successfully')
-        #     return redirect(url_for('home'))
     return render_template('login.html', form=form, error=error)
 
 
