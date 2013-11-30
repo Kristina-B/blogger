@@ -22,7 +22,9 @@ engine = create_engine(app.config['DBURI'], echo=True)
 # Привязка класса Session к существующему engine
 Session.configure(bind=engine)
 
+
 # Удаление сессии при остановке приложения
+#noinspection PyUnusedLocal
 @app.teardown_appcontext
 def teardown_db(exception):
     Session.remove()
@@ -51,24 +53,6 @@ def logout():
     return redirect(url_for('home'))
 
 
-#@app.route('/register', methods=['GET', 'POST'])
-#def registration():
-#    error = None
-#    if request.method == 'POST':
-#        dbs = Session()
-#        user = dbs.query(User).filter(User.username == request.form['username']).first()
-#        if user.username == request.form['username']:
-#            flash ('Uppsss, we have already this user')
-#            return redirect (url_for('login'))
-#
-#        dbs.add(user)
-#        dbs.commit()
-#        session['user_'id] = user.id
-#        flash('Thanks for registration!')
-#
-#
-#    return render_template('registration.html', user=user)
-
 @app.route('/register', methods=['GET', 'POST'])
 def registration():
     form = RegistrationForm(request.form)
@@ -82,6 +66,7 @@ def registration():
         flash('Thanks for registering')
         return redirect(url_for('login'))
     return render_template('registration.html', form=form)
+
 
 @app.route('/')
 def home():
@@ -101,8 +86,8 @@ def add_post():
 
     dbs = Session()
     post = Post(title=request.form['title'],
-                author_id=session['user']['id'],
                 content=request.form['content'],
+                author_id=session['user']['id'],
                 created_at=dt.datetime.utcnow())
     dbs.add(post)
     dbs.commit()
@@ -126,6 +111,7 @@ def edit_post(post_id):
     dbs.commit()
     return redirect(url_for('home'))
 
+
 @app.route('/post/<post_id>/delete')
 def delete_post(post_id):
     if not session.get('user'):
@@ -137,13 +123,15 @@ def delete_post(post_id):
     flash('Post was deleted')
     return redirect(url_for('home'))
 
+
 @app.route('/post/<post_id>/')
 def show_post(post_id):
     dbs = Session()
     post = dbs.query(Post).get(post_id)
     if post is None:
         abort(404)
-    return render_template ('show_post.html', post=post)
+    return render_template('show_post.html', post=post)
+
 
 @app.route('/post/<post_id>/add_comment/', methods=['GET', 'POST'])
 def add_comment(post_id):
@@ -162,13 +150,17 @@ def add_comment(post_id):
     flash('Comment was added to post')
     return redirect(url_for('show_post', post_id=post.id))
 
+
+#noinspection PyUnusedLocal
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template ('error_404.html'), 404
+    return render_template('error_404.html'), 404
+
 
 @app.errorhandler(400)
 def csrf_error(reason):
     return render_template('csrf_error.html', reason=reason), 400
+
 
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
