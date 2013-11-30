@@ -41,9 +41,19 @@ class Post(Model):
 
     comments = relationship('Comment')
 
-    def __init__(self, title, content):
+    # comment = Comment('comment body')
+    # post = dbs.query(Post).get(id)
+    # post.comments.add(comment)
+    # dbs.commit()
+
+    def __init__(self, title, content, author_id, created_at):
         self.title = title
         self.content = content
+
+        self.author_id = author_id
+
+        self.created_at = created_at
+
 
 class Comment(Model):
     __tablename__ = 'comment'
@@ -54,5 +64,6 @@ class Comment(Model):
 
     created_at = Column(DateTime)
 
-    def __init__(self, content):
+    def __init__(self, content, created_at):
         self.content = content
+        self.created_at = created_at
