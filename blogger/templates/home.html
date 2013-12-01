@@ -3,26 +3,36 @@
 {% block body %}
 
 {% for post in posts %}
-  <h1>
-    <a href={{ url_for('show_post', post_id=post.id) }}>
+<div class="post">
+  <h1 class="title">
+    <a href="{{ url_for('show_post', post_id=post.id) }}">
       {{ post.title }}
     </a>
   </h1>
+  <div class="updated">
+      {% if post.updated_at %}
+        {{ post.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}
+      {% else %}
+        {{ post.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+      {% endif %}
+  </div>
+  <div class="content">
+      {{ post.content }}
+  </div>
 
-  <div>(written by {{ post.author.username }})</div>
-  <div>Created: {{ post.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+  <div class="post-meta">
+      <span class="author">{{ post.author.username }}</span>
+
+      <a class="icon-link" href="{{ url_for('edit_post', post_id=post.id) }}">
+        <span class="glyphicon glyphicon-edit"></span>
+      </a>
+
+      <a class="icon-link" href="{{ url_for('delete_post', post_id=post.id ) }}">
+        <span class="glyphicon glyphicon-remove"></span>
+      </a>
+  </div>
   
-  {% if post.updated_at %}
-  <div>Last updated: {{ post.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
-  {% endif %}
-
-  <div>{{ post.content }}</div>
-
-  <a href={{ url_for('edit_post', post_id=post.id) }}>Edit</a>
-  <a href={{ url_for('delete_post', post_id=post.id ) }}>Delete</a>
-  <a href={{ url_for('show_post', post_id=post.id) }}>Show this post</a>
-  
-  <hr> {# горизонтальная полоска #}
+</div>
 {% endfor %}
 
 {% endblock %}

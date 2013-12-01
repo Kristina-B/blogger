@@ -1,42 +1,34 @@
 # coding: utf-8
 import datetime as dt
 
-from sqlalchemy import create_engine
-from flask import Flask, request, url_for, abort, redirect, render_template, flash, session
+from flask import Flask, request, url_for, abort, redirect, \
+    render_template, flash, session
 
-from blogger.models import Session, Post, Comment, User
+#noinspection PyUnresolvedReferences
+from flask.ext.sqlalchemy import SQLAlchemy
+#noinspection PyUnresolvedReferences
+from flask.ext.wtf import CsrfProtect
+
+from blogger.models import db, Post, Comment, User
 from blogger.forms import RegistrationForm, LoginForm, PostForm, CommentForm
-
-from flask_wtf.csrf import CsrfProtect
 
 # Создание объекта Flask
 app = Flask(__name__)
-CsrfProtect(app)
 
 # Загрузка параметров из файла settings.py
 app.config.from_pyfile('settings.py')
 
-# Создание engine. Engine - менеджер подключений к базе данных
-engine = create_engine(app.config['DBURI'], echo=True)
+CsrfProtect(app)
+db.init_app(app)
 
-# Привязка класса Session к существующему engine
-Session.configure(bind=engine)
-
-
-# Удаление сессии при остановке приложения
-#noinspection PyUnusedLocal
-@app.teardown_appcontext
-def teardown_db(exception):
-    Session.remove()
 
 
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     error = None
-    dbs = Session()
     form = LoginForm(request.form)
     if request.method == 'POST':
-        user = dbs.query(User).filter_by(username=form.username.data).first()
+        user = User.query.filter_by(username=form.username.data).first()
         if user and user.password == form.password.data:
             session['user'] = {'id': user.id, 'username': user.username}
             return redirect(url_for('home'))
@@ -57,10 +49,9 @@ def logout():
 def registration():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        dbs = Session()
         user = User(form.username.data, form.password.data)
-        dbs.add(user)
-        dbs.commit()
+        db.session.add(user)
+        db.session.commit()
         session['user'] = {'id': user.id, 'username': user.username}
 
         flash('Thanks for registering')
@@ -70,8 +61,7 @@ def registration():
 
 @app.route('/')
 def home():
-    dbs = Session()
-    posts = dbs.query(Post).order_by(Post.id).all()
+    posts = Post.query.order_by(Post.id).all()
     return render_template('home.html', posts=posts)
 
 
@@ -84,13 +74,12 @@ def add_post():
     if request.method == 'GET':
         return render_template('new_post.html', form=form)
 
-    dbs = Session()
     post = Post(title=request.form['title'],
                 content=request.form['content'],
                 author_id=session['user']['id'],
                 created_at=dt.datetime.utcnow())
-    dbs.add(post)
-    dbs.commit()
+    db.session.add(post)
+    db.session.commit()
     return redirect(url_for('home'))
 
 
@@ -99,8 +88,7 @@ def edit_post(post_id):
     form = PostForm(request.form)
     if not session.get('user'):
         abort(401)
-    dbs = Session()
-    post = dbs.query(Post).get(post_id)
+    post = Post.query.get(post_id)
 
     if request.method == 'GET':
         return render_template('edit_post.html', post=post, form=form)
@@ -108,7 +96,7 @@ def edit_post(post_id):
     post.title = request.form['title']
     post.content = request.form['content']
     post.updated_at = dt.datetime.utcnow()
-    dbs.commit()
+    db.session.commit()
     return redirect(url_for('home'))
 
 
@@ -116,18 +104,16 @@ def edit_post(post_id):
 def delete_post(post_id):
     if not session.get('user'):
         abort(401)
-    dbs = Session()
-    post = dbs.query(Post).get(post_id)
-    dbs.delete(post)
-    dbs.commit()
+    post = Post.query.get(post_id)
+    db.session.delete(post)
+    db.session.commit()
     flash('Post was deleted')
     return redirect(url_for('home'))
 
 
 @app.route('/post/<post_id>/')
 def show_post(post_id):
-    dbs = Session()
-    post = dbs.query(Post).get(post_id)
+    post = Post.query.get(post_id)
     if post is None:
         abort(404)
     return render_template('show_post.html', post=post)
@@ -136,17 +122,20 @@ def show_post(post_id):
 @app.route('/post/<post_id>/add_comment/', methods=['GET', 'POST'])
 def add_comment(post_id):
     form = CommentForm(request.form)
-    dbs = Session()
-    post = dbs.query(Post).get(post_id)
+    post = Post.query.get(post_id)
 
     if request.method == 'GET':
         return render_template('add_comment.html', post=post, form=form)
-    
+
+    user_id = session.get('user', {}).get('id')
+
     comment = Comment(
         content=request.form['content'],
+        author_id=user_id,
         created_at=dt.datetime.utcnow())
+
     post.comments.append(comment)
-    dbs.commit()
+    db.session.commit()
     flash('Comment was added to post')
     return redirect(url_for('show_post', post_id=post.id))
 

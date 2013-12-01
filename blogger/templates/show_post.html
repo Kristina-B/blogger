@@ -3,19 +3,41 @@
 {% block body %}
 
 <h1>{{ post.title }}</h1>
+
 <div>
-    {{ post.content }}
-</div>
-<hr>
-<div>
-{% for comment in post.comments %}
-    <div style="background-color: #ccc; margin-top: 0.5em; margin-bottom: 0.5em;">
-        {{ comment.content }}
-    </div>
-{% endfor %}
+    <small> (written by {{ post.author.username }}) </small>
 </div>
 
-<a href={{ url_for('add_comment', post_id=post.id) }}>Add_comment</a>
+<div>
+    <small> Created: {{ post.created_at.strftime('%Y-%m-%d %H:%M:%S') }} </small>
+</div>
+
+<div style="line-height: 2.0em; font-style: italic;">
+    {{ post.content }}
+</div>
+
+<hr>
+
+{% for comment in post.comments %}
+<div style="background-color: #ccc; margin-top: 0.5em; ">
+
+    <div style="line-height: 2.0em; font-style: normal;">
+        {{ comment.content }}
+    </div>
+
+    <div>
+        <small> Created: {{ comment.created_at.strftime('%Y-%m-%d %H:%M:%S') }} </small>
+    </div>
+
+    <div>
+        <small> (written by {{comment.author.username|default("anonymous")}} ) </small>
+    </div>
+
+</div>
+{% endfor %}
+
+
+<a href="{{ url_for('add_comment', post_id=post.id) }}">Add_comment</a>
 
 
 {% endblock %}

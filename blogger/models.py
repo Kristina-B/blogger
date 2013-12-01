@@ -2,42 +2,40 @@
 # Объявление моделей
 # Каждой модели соотвествует таблица в базе данных
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
-from sqlalchemy.orm import sessionmaker, scoped_session, relationship
-from sqlalchemy.ext.declarative import declarative_base
+from flask_sqlalchemy import SQLAlchemy
 
-Session = scoped_session(sessionmaker())
+from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy.orm import relationship
 
-Model = declarative_base()
-
-#Model.query = Session.query_property()
+db = SQLAlchemy()
 
 
-class User(Model):
+class User(db.Model):
     __tablename__ = 'user'
 
-    id = Column(Integer, primary_key=True)
-    username = Column(String(30), unique=True)
-    password = Column(String(64))
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(30), unique=True)
+    password = db.Column(db.String(64))
 
     posts = relationship('Post', backref='author')
+    comments = relationship('Comment', backref='author')
 
     def __init__(self, username, password):
         self.username = username
         self.password = password
 
 
-class Post(Model):
+class Post(db.Model):
     __tablename__ = 'post'
 
-    id = Column(Integer, primary_key=True)
-    author_id = Column(Integer, ForeignKey('user.id'))
+    id = db.Column(db.Integer, primary_key=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    title = Column(String(100))
-    content = Column(Text)
+    title = db.Column(db.String(100))
+    content = db.Column(db.Text)
 
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    created_at = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime)
 
     comments = relationship('Comment')
 
@@ -55,15 +53,17 @@ class Post(Model):
         self.created_at = created_at
 
 
-class Comment(Model):
+class Comment(db.Model):
     __tablename__ = 'comment'
 
-    id = Column(Integer, primary_key=True)
-    post_id = Column(Integer, ForeignKey('post.id'))
-    content = Column(Text)
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    content = db.Column(db.Text)
 
-    created_at = Column(DateTime)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    created_at = db.Column(db.DateTime)
 
-    def __init__(self, content, created_at):
+    def __init__(self, content, author_id, created_at):
         self.content = content
+        self.author_id = author_id
         self.created_at = created_at

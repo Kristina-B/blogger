@@ -7,21 +7,23 @@
     <form class="reg_form" action="" method="post">
         {{ form.csrf_token }}
         <div>
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" required>
+            {{ form.username.label }}
+            {{ form.username() }}
         </div>
 
         <div>
-            <label for="password">Password</label>
-             <input type="password" id="password" name="password" required>
+            {{ form.password.label }}
+            {{ form.password() }}
         </div>
 
         <div>
-            <label for="password_2">Enter password again</label>
-            <input type="password" id="password_2" name="password_2" required>
+            {{ form.password_confirm.label }}
+            {{ form.password_confirm() }}
         </div>
 
-        <input class="reg_bottom" type="submit" value="Registration">
+        <div class="clear">
+            <input type="submit" value="Registration">
+        </div>
     </form>
 </section>
 

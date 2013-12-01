@@ -7,18 +7,18 @@ from wtforms.validators import Required, EqualTo
 class RegistrationForm(Form):
     __tablename__ = 'registrationForm'
 
-    username = TextField('username', [Required()])
-    password = PasswordField('password', [
+    username = TextField('Username', [Required()])
+    password = PasswordField('Password', [
         Required(),
-        EqualTo('password_2', message='Passwords must match')])
-    password_2 = PasswordField('repeat Password')
+        EqualTo('password_confirm', message='Passwords must match')])
+    password_confirm = PasswordField('Confirm password')
 
 
 class LoginForm(Form):
     __tablename__ = 'loginForm'
 
-    username = TextField('username', [Required()])
-    password = PasswordField('password', [Required()])
+    username = TextField('Username', [Required()])
+    password = PasswordField('Password', [Required()])
 
 
 class PostForm(Form):

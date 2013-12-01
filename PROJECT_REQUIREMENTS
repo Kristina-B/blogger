@@ -21,7 +21,7 @@ Improvements:
 1. Use Flask-SQLAlchemy in future
 2. Organize source code with blueprints (Read about flask blueprints)
 
-Advvanced features:
+Advanced features:
 
 1. Rating
 
